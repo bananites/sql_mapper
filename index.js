@@ -70,7 +70,12 @@ function readFile(newArgs) {
     })
 }
 function writeIntoFile(sqlObject, filename) {
-    fs.writeFile(filename + ".json", JSON.stringify(sqlObject, null, 2), "utf-8", (err) => {
+
+    if (trimResult) {
+        filename = filename + "_trim";
+    }
+    
+    fs.writeFile("output/" + filename + ".json", JSON.stringify(sqlObject, null, 2), "utf-8", (err) => {
         if (err) {
             console.error("Fehler beim Schreiben der Datei:", err);
         } else {
@@ -96,8 +101,10 @@ function extractBetweenBrackets(sql) {
 
 function getValuesFromStrings(matches) {
     var fields = matches[0].split(",");
-    var values = matches[1].split(",");
-
+    var values = matches[1].split(/, (?=(?:[^']*'[^']*')*[^']*$)/);
+    // var values = matches[1].split("/, /");
+    //TODO TESTEN
+    // const values = matches[1].match(/(?:\d+,\d+|\d+|\w+)/g);
     var data = {};
 
     for (var i = 0; i < fields.length; i++) {
